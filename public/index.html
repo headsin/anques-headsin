@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Candidate Search Dashboard 2025</title>
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+            rel="stylesheet">
+      <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+      <style>
+            :root {
+                  --primary-color: #3f1562;
+                  --secondary-color: #fff;
+                  --primary-light: rgba(63, 21, 98, 0.1);
+                  --primary-gradient: linear-gradient(135deg, #3f1562 0%, #5a2485 100%);
+                  --accent-gradient: linear-gradient(135deg, #3f1562 0%, #7c3aed 100%);
+                  --success-color: #10b981;
+                  --danger-color: #ef4444;
+                  --warning-color: #f59e0b;
+                  --text-primary: #1f2937;
+                  --text-secondary: #6b7280;
+                  --text-muted: #9ca3af;
+                  --bg-light: #f8fafc;
+                  --bg-white: #ffffff;
+                  --border-color: #e5e7eb;
+                  --shadow-light: 0 1px 3px rgba(0, 0, 0, 0.1);
+                  --shadow-medium: 0 4px 6px rgba(0, 0, 0, 0.1);
+                  --shadow-large: 0 10px 15px rgba(0, 0, 0, 0.1);
+                  --border-radius: 12px;
+                  --border-radius-lg: 16px;
+            }
+
+
+
+            * {
+                  margin: 0;
+                  padding: 0;
+                  box-sizing: border-box;
+            }
+
+            body {
+                  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                  background: var(--bg-light);
+                  color: var(--text-primary);
+                  line-height: 1.6;
+                  min-height: 100vh;
+            }
+
+            /* Sidebar */
+            .sidebar {
+                  background: var(--bg-white);
+                  border-right: 1px solid var(--border-color);
+                  height: 100vh;
+                  position: fixed;
+                  top: 0;
+                  left: 0;
+                  width: 320px;
+                  z-index: 1000;
+                  box-shadow: var(--shadow-medium);
+                  transition: transform 0.3s ease;
+                  display: flex;
+                  flex-direction: column;
+                  overflow: hidden;
+            }
+
+            .sidebar.collapsed {
+                  transform: translateX(-100%);
+            }
+
+            /* Logo Section */
+            .logo-section {
+                  padding: 2rem 1.5rem;
+                  border-bottom: 1px solid var(--border-color);
+                  background: var(--primary-color);
+                  color: var(--secondary-color);
+                  text-align: center;
+                  flex-shrink: 0;
+            }
+
+            .logo-container {
+                  display: flex;
+                  align-items: center;
+                  gap: 1rem;
+            }
+
+            .logo-container img {
+                  width: 200px;
+                  margin: auto;
+            }
+
+            .logo {
+                  width: 48px;
+                  height: 48px;
+                  background: var(--secondary-color);
+                  border-radius: var(--border-radius);
+                  padding: 8px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  flex-shrink: 0;
+            }
+
+            .logo img {
+                  width: 100%;
+                  height: 100%;
+                  object-fit: contain;
+            }
+
+            .brand-text h2 {
+                  font-size: 1.25rem;
+                  font-weight: 700;
+                  margin: 0;
+                  line-height: 1.2;
+            }
+
+            .brand-text p {
+                  font-size: 0.875rem;
+                  opacity: 0.8;
+                  margin: 0;
+            }
+
+            /* Smart Filters Card */
+            .filters-card {
+                  margin: 1.5rem;
+                  background: var(--bg-white);
+                  border: 1px solid var(--border-color);
+                  border-radius: var(--border-radius-lg);
+                  box-shadow: var(--shadow-light);
+                  overflow: hidden;
+                  flex: 1;
+                  display: flex;
+                  flex-direction: column;
+                  min-height: 0;
+            }
+
+            .filters-header {
+                  background: var(--primary-light);
+                  border-bottom: 1px solid var(--border-color);
+                  padding: 1.5rem;
+                  flex-shrink: 0;
+            }
+
+            .filters-title {
+                  color: var(--primary-color);
+                  font-size: 1.125rem;
+                  font-weight: 600;
+                  margin: 0;
+                  display: flex;
+                  align-items: center;
+                  gap: 0.75rem;
+            }
+
+            .filters-body {
+                  padding: 1.5rem;
+                  overflow-y: auto;
+                  flex: 1;
+                  min-height: 0;
+            }
+
+            /* Form Inputs */
+            .input-group {
+                  position: relative;
+                  margin-bottom: 1.5rem;
+            }
+
+            .input-label {
+                  display: block;
+                  font-size: 0.875rem;
+                  font-weight: 500;
+                  color: var(--text-primary);
+                  margin-bottom: 0.5rem;
+            }
+
+            .input-icon {
+                  position: absolute;
+                  left: 1rem;
+                  top: 50%;
+                  transform: translateY(-50%);
+                  color: var(--text-muted);
+                  z-index: 10;
+                  font-size: 1rem;
+            }
+
+            .form-control {
+                  background: var(--bg-white);
+                  border: 2px solid var(--border-color);
+                  border-radius: var(--border-radius);
+                  color: var(--text-primary);
+                  padding: 0.875rem 1rem 0.875rem 3rem;
+                  font-size: 0.95rem;
+                  transition: all 0.3s ease;
+                  width: 100%;
+            }
+
+            .form-control::placeholder {
+                  color: var(--text-muted);
+                  opacity: 0.7;
+            }
+
+            .form-control:focus {
+                  outline: none;
+                  border-color: var(--primary-color);
+                  box-shadow: 0 0 0 3px rgba(63, 21, 98, 0.1);
+            }
+
+            /* Enhanced Select Field Styling */
+            select.form-control {
+                  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+                  background-position: right 0.75rem center;
+                  background-repeat: no-repeat;
+                  background-size: 1rem;
+                  padding-right: 3rem;
+                  appearance: none;
+                  cursor: pointer;
+            }
+
+            select.form-control:hover {
+                  border-color: var(--primary-color);
+                  background-color: var(--primary-light);
+            }
+
+            select.form-control:focus {
+                  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%233f1562' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            }
+
+            select.form-control option {
+                  background: var(--bg-white);
+                  color: var(--text-primary);
+                  padding: 0.75rem;
+                  font-size: 0.95rem;
+            }
+
+            select.form-control option:hover,
+            select.form-control option:checked {
+                  background: var(--primary-light);
+                  color: var(--primary-color);
+            }
+
+            /* Special styling for experience and gender selects */
+            #experience, #gender {
+                  font-weight: 500;
+                  background-color: var(--bg-white);
+                  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%233f1562' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.8' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+                  border: 2px solid var(--border-color);
+                  box-shadow: var(--shadow-light);
+            }
+
+            #experience:focus, #gender:focus {
+                  border-color: var(--primary-color);
+                  box-shadow: 0 0 0 3px rgba(63, 21, 98, 0.15);
+                  background-color: rgba(63, 21, 98, 0.02);
+            }
+
+            #experience:hover, #gender:hover {
+                  border-color: var(--primary-color);
+                  background-color: rgba(63, 21, 98, 0.05);
+                  transform: translateY(-1px);
+                  box-shadow: var(--shadow-medium);
+            }
+
+            /* Search Button */
+            .btn-search {
+                  background: var(--primary-gradient);
+                  border: none;
+                  border-radius: var(--border-radius);
+                  color: #fff;
+                  font-weight: 600;
+                  font-size: 0.95rem;
+                  padding: 1rem 1.5rem;
+                  width: 100%;
+                  transition: all 0.3s ease;
+                  box-shadow: var(--shadow-medium);
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  gap: 0.5rem;
+            }
+
+            .btn-search:hover {
+                  transform: translateY(-2px);
+                  box-shadow: var(--shadow-large);
+                  filter: brightness(1.1);
+            }
+
+            .btn-search:active {
+                  transform: translateY(0);
+            }
+
+            /* Main Content */
+            .main-content {
+                  margin-left: 320px;
+                  min-height: 100vh;
+                  background: var(--bg-light);
+                  transition: margin-left 0.3s ease;
+            }
+
+            .main-content.expanded {
+                  margin-left: 0;
+            }
+
+            /* Header */
+            .main-header {
+                  background: var(--bg-white);
+                  border-bottom: 1px solid var(--border-color);
+                  padding: 2rem;
+                  box-shadow: var(--shadow-light);
+            }
+
+            .header-content {
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  flex-wrap: wrap;
+                  gap: 1rem;
+            }
+
+            .header-title {
+                  color: var(--primary-color);
+                  font-size: 2rem;
+                  font-weight: 700;
+                  margin: 0;
+            }
+
+            .header-subtitle {
+                  color: var(--text-secondary);
+                  margin: 0.5rem 0 0 0;
+                  font-size: 1rem;
+            }
+
+            .mobile-toggle {
+                  display: none;
+                  background: var(--primary-color);
+                  color: var(--secondary-color);
+                  border: none;
+                  border-radius: var(--border-radius);
+                  padding: 0.75rem;
+                  font-size: 1.125rem;
+                  cursor: pointer;
+                  transition: all 0.3s ease;
+            }
+
+            .mobile-toggle:hover {
+                  background: var(--primary-color);
+                  opacity: 0.9;
+            }
+
+            /* Results Container */
+            .results-container {
+                  padding: 2rem;
+            }
+
+            .results-header {
+                  background: var(--bg-white);
+                  border: 1px solid var(--border-color);
+                  border-radius: var(--border-radius-lg);
+                  padding: 1.5rem;
+                  margin-bottom: 2rem;
+                  box-shadow: var(--shadow-light);
+            }
+
+            .results-count {
+                  font-size: 1.1rem;
+                  color: var(--text-secondary);
+                  font-weight: 500;
+                  margin: 0;
+                  display: flex;
+                  align-items: center;
+                  gap: 0.5rem;
+            }
+
+            /* Candidate Cards */
+            .candidate-card {
+                  background: var(--bg-white);
+                  border: 1px solid var(--border-color);
+                  border-radius: var(--border-radius-lg);
+                  padding: 2rem;
+                  margin-bottom: 1.5rem;
+                  box-shadow: var(--shadow-light);
+                  transition: all 0.3s ease;
+                  position: relative;
+                  overflow: hidden;
+            }
+
+            .candidate-card::before {
+                  content: '';
+                  position: absolute;
+                  top: 0;
+                  left: 0;
+                  right: 0;
+                  height: 4px;
+                  background: var(--primary-gradient);
+                  transform: scaleX(0);
+                  transition: transform 0.3s ease;
+            }
+
+            .candidate-card:hover {
+                  transform: translateY(-5px);
+                  box-shadow: var(--shadow-large);
+                  border-color: var(--primary-color);
+            }
+
+            .candidate-card:hover::before {
+                  transform: scaleX(1);
+            }
+
+            .candidate-info {
+                  display: grid;
+                  gap: 1rem;
+            }
+
+            .info-row {
+                  display: flex;
+                  align-items: center;
+                  gap: 1rem;
+            }
+
+            .info-label {
+                  font-weight: 600;
+                  color: var(--text-primary);
+                  min-width: 90px;
+                  font-size: 0.9rem;
+            }
+
+            .info-value {
+                  color: var(--text-secondary);
+                  flex: 1;
+                  font-size: 0.95rem;
+            }
+
+            .info-icon {
+                  color: var(--primary-color);
+                  width: 18px;
+                  font-size: 1rem;
+            }
+
+            /* Action Buttons */
+            .action-buttons {
+                  margin-top: 2rem;
+                  display: flex;
+                  gap: 1rem;
+                  flex-wrap: wrap;
+            }
+
+            .btn-action {
+                  padding: 0.75rem 1.5rem;
+                  border-radius: var(--border-radius);
+                  font-weight: 600;
+                  font-size: 0.875rem;
+                  text-decoration: none;
+                  display: inline-flex;
+                  align-items: center;
+                  gap: 0.5rem;
+                  transition: all 0.3s ease;
+                  border: none;
+                  cursor: pointer;
+            }
+
+            .btn-resume {
+                  background: var(--success-color);
+                  color: var(--secondary-color);
+                  box-shadow: var(--shadow-light);
+            }
+
+            .btn-resume:hover {
+                  transform: translateY(-2px);
+                  box-shadow: var(--shadow-medium);
+                  color: var(--secondary-color);
+                  filter: brightness(1.1);
+            }
+
+            .btn-whatsapp {
+                  background: #25d366;
+                  color: var(--secondary-color);
+                  box-shadow: var(--shadow-light);
+            }
+
+            .btn-whatsapp:hover {
+                  transform: translateY(-2px);
+                  box-shadow: var(--shadow-medium);
+                  color: var(--secondary-color);
+                  filter: brightness(1.1);
+            }
+
+            .btn-disabled {
+                  background: var(--bg-light);
+                  color: var(--text-muted);
+                  cursor: not-allowed;
+                  border: 1px solid var(--border-color);
+            }
+
+            /* Pagination */
+            .pagination-container {
+                  display: flex;
+                  justify-content: center;
+                  margin-top: 3rem;
+            }
+
+            .pagination {
+                  background: var(--bg-white);
+                  border: 1px solid var(--border-color);
+                  border-radius: var(--border-radius-lg);
+                  padding: 0.75rem;
+                  box-shadow: var(--shadow-light);
+                  display: flex;
+                  gap: 0.25rem;
+            }
+
+            .page-item {
+                  margin: 0;
+            }
+
+            .page-link {
+                  background: transparent;
+                  border: none;
+                  color: var(--text-secondary);
+                  padding: 0.75rem 1rem;
+                  border-radius: var(--border-radius);
+                  font-weight: 500;
+                  font-size: 0.9rem;
+                  transition: all 0.3s ease;
+                  text-decoration: none;
+                  min-width: 45px;
+                  text-align: center;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+            }
+
+            .page-item.active .page-link {
+                  background: var(--primary-color);
+                  color: var(--secondary-color);
+            }
+
+            .page-link:hover {
+                  background: var(--primary-light);
+                  color: var(--primary-color);
+            }
+
+            .page-item.active .page-link:hover {
+                  background: var(--primary-color);
+                  color: var(--secondary-color);
+            }
+
+            /* Loading Animation */
+            .loading {
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                  padding: 3rem;
+            }
+
+            .loading-spinner {
+                  width: 40px;
+                  height: 40px;
+                  border: 3px solid var(--border-color);
+                  border-top: 3px solid var(--primary-color);
+                  border-radius: 50%;
+                  animation: spin 1s linear infinite;
+            }
+
+            @keyframes spin {
+                  0% {
+                        transform: rotate(0deg);
+                  }
+
+                  100% {
+                        transform: rotate(360deg);
+                  }
+            }
+
+            /* Empty State */
+            .empty-state {
+                  text-align: center;
+                  padding: 3rem 2rem;
+            }
+
+            .empty-state i {
+                  font-size: 3rem;
+                  color: var(--text-muted);
+                  margin-bottom: 1rem;
+            }
+
+            .empty-state h5 {
+                  color: var(--text-primary);
+                  margin-bottom: 0.5rem;
+            }
+
+            .empty-state p {
+                  color: var(--text-muted);
+                  margin: 0;
+            }
+
+            /* Responsive Design */
+            @media (max-width: 1024px) {
+                  .sidebar {
+                        transform: translateX(-100%);
+                  }
+
+                  .sidebar.open {
+                        transform: translateX(0);
+                  }
+
+                  .main-content {
+                        margin-left: 0;
+                  }
+
+                  .mobile-toggle {
+                        display: block;
+                  }
+            }
+
+            @media (max-width: 768px) {
+                  .sidebar {
+                        width: 100%;
+                  }
+
+                  .main-header {
+                        padding: 1.5rem;
+                  }
+
+                  .header-title {
+                        font-size: 1.75rem;
+                  }
+
+                  .results-container {
+                        padding: 1.5rem;
+                  }
+
+                  .candidate-card {
+                        padding: 1.5rem;
+                  }
+
+                  .action-buttons {
+                        flex-direction: column;
+                  }
+
+                  .btn-action {
+                        justify-content: center;
+                  }
+
+                  .logo-section {
+                        padding: 1.5rem;
+                  }
+
+                  .filters-card {
+                        margin: 1rem;
+                  }
+            }
+
+            @media (max-width: 576px) {
+                  .main-header {
+                        padding: 1rem;
+                  }
+
+                  .header-title {
+                        font-size: 1.5rem;
+                  }
+
+                  .results-container {
+                        padding: 1rem;
+                  }
+
+                  .candidate-card {
+                        padding: 1rem;
+                  }
+
+                  .pagination {
+                        padding: 0.5rem;
+                        gap: 0.125rem;
+                  }
+
+                  .page-link {
+                        padding: 0.5rem 0.75rem;
+                        min-width: 40px;
+                        font-size: 0.85rem;
+                  }
+            }
+
+            /* Backdrop for mobile sidebar */
+            .sidebar-backdrop {
+                  display: none;
+                  position: fixed;
+                  top: 0;
+                  left: 0;
+                  width: 100%;
+                  height: 100%;
+                  background: rgba(0, 0, 0, 0.5);
+                  z-index: 999;
+            }
+
+            .sidebar-backdrop.show {
+                  display: block;
+            }
+
+            .brand-text {
+                  display: none !important;
+            }
+
+            .page-input input#pageInput {
+                  max-width: 120px;
+                  border: 1px solid var(--secondary-color);
+                  border-radius: 6px;
+                  padding: 0.4rem 0.6rem;
+                  font-size: 0.9rem;
+            }
+
+            .page-input button {
+                  padding: 0.4rem 0.8rem;
+                  font-size: 0.9rem;
+            }
+      </style>
+</head>
+
+<body>
+      <!-- Sidebar -->
+      <div class="sidebar" id="sidebar">
+            <!-- Logo Section -->
+            <div class="logo-section">
+                  <div class="logo-container">
+
+                        <img src="https://www.dropbox.com/scl/fi/q7e1gpaj3bn1hf1300oue/unnamed.png?rlkey=yesdj3i6w9piwmmqr2x7h5w5j&st=9q74ym9q&dl=1"
+                              alt="Logo"
+                              onerror="this.src=''; this.outerHTML='<i class=&quot;fas fa-building&quot; style=&quot;color: var(--primary-color);&quot;></i>';">
+
+                  </div>
+            </div>
+
+            <!-- Smart Filters Card -->
+            <div class="filters-card">
+                  <div class="filters-header">
+                        <h4 class="filters-title">
+                              <i class="fas fa-sliders-h"></i>
+                              Smart Filters
+                        </h4>
+                  </div>
+                  <div class="filters-body">
+                        <div class="input-group">
+                              <label class="input-label">Job Role</label>
+                              <div style="position: relative;">
+                                    <i class="fas fa-briefcase input-icon"></i>
+                                    <input id="role" class="form-control" placeholder="e.g., Developer, Designer">
+                              </div>
+                        </div>
+
+                        <div class="input-group">
+                              <label class="input-label">Candidate Name</label>
+                              <div style="position: relative;">
+                                    <i class="fas fa-user input-icon"></i>
+                                    <input id="name" class="form-control" placeholder="Enter name">
+                              </div>
+                        </div>
+
+
+                        <div class="input-group">
+                              <label class="input-label">Contact Number</label>
+                              <div style="position: relative;">
+                                    <i class="fas fa-phone input-icon"></i>
+                                    <input id="contact" class="form-control" placeholder="Phone number">
+                              </div>
+                        </div>
+
+                        <div class="input-group">
+                              <label class="input-label">Experience</label>
+                              <div style="position: relative;">
+                                    <i class="fas fa-briefcase input-icon"></i>
+                                    <select id="experience" class="form-control">
+                                          <option value="">Select Experience</option>
+                                    </select>
+                              </div>
+                        </div>
+
+                        <div class="input-group">
+                              <label class="input-label">Gender</label>
+                              <div style="position: relative;">
+                                    <i class="fas fa-venus-mars input-icon"></i>
+                                    <select id="gender" class="form-control">
+                                          <option value="">Select Gender</option>
+                                          <option value="5">Male</option>
+                                          <option value="1">Female</option>
+                                    </select>
+                              </div>
+                        </div>
+
+                        <button class="btn-search" onclick="filterCandidates()">
+                              <i class="fas fa-search"></i>
+                              Search Candidates
+                        </button>
+                  </div>
+            </div>
+      </div>
+
+      <!-- Sidebar Backdrop for mobile -->
+      <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
+
+      <!-- Main Content -->
+      <div class="main-content" id="mainContent">
+            <!-- Header -->
+            <div class="main-header">
+                  <div class="header-content">
+                        <div>
+                              <h1 class="header-title">Candidate Search</h1>
+                              <p class="header-subtitle">Find and manage your perfect candidates</p>
+                        </div>
+                        <button class="mobile-toggle" onclick="toggleSidebar()">
+                              <i class="fas fa-bars"></i>
+                        </button>
+                  </div>
+            </div>
+
+            <!-- Results Container -->
+            <div class="results-container">
+                  <div id="results"></div>
+
+                  <div class="pagination-container">
+                        <nav>
+                              <ul id="pagination" class="pagination"></ul>
+                        </nav>
+                        <div class="page-input mt-2 d-flex align-items-center gap-2">
+                              <input type="number" id="pageInput" class="form-control" placeholder="Page #" min="1"
+                                    style="max-width:120px;">
+                              <button class="btn btn-primary" onclick="jumpToPage()">Go</button>
+                        </div>
+                  </div>
+            </div>
+      </div>
+
+      <script>
+            let candidates = [];
+            let filtered = [];
+            let resultsPerPage = 10;
+            let currentPage = 1;
+            let searchPerformed = false;
+
+            // Function to populate experience dropdown with unique values
+            function populateExperienceOptions() {
+                  const experienceSet = new Set();
+                  candidates.forEach(candidate => {
+                        if (candidate.Experience && candidate.Experience.trim() !== '') {
+                              experienceSet.add(candidate.Experience.trim());
+                        }
+                  });
+                  
+                  const experienceSelect = document.getElementById('experience');
+                  // Clear existing options except the first one
+                  experienceSelect.innerHTML = '<option value="">Select Experience</option>';
+                  
+                  // Sort and add unique experience values
+                  Array.from(experienceSet).sort().forEach(exp => {
+                        const option = document.createElement('option');
+                        option.value = exp;
+                        option.textContent = exp;
+                        experienceSelect.appendChild(option);
+                  });
+            }
+
+            // Mobile sidebar toggle
+            function toggleSidebar() {
+                  const sidebar = document.getElementById('sidebar');
+                  const backdrop = document.getElementById('sidebarBackdrop');
+
+                  sidebar.classList.toggle('open');
+                  backdrop.classList.toggle('show');
+            }
+
+            // Show loading state
+            function showLoading() {
+                  document.getElementById("results").innerHTML = `
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                </div>
+            `;
+            }
+
+            // Initialize data loading
+            showLoading();
+
+            Papa.parse("anquesXheadsin.csv", {
+                  download: true,
+                  header: true,
+                  complete: function (results) {
+                        candidates = results.data.filter(row => row.Name && row.Name.trim() !== '');
+                        filtered = candidates;
+                        populateExperienceOptions();
+                        renderResults();
+                  },
+                  error: function (error) {
+                        document.getElementById("results").innerHTML = `
+                    <div class="results-header">
+                        <p class="results-count" style="color: var(--danger-color);">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Error loading candidate data. Please check if the CSV file exists.
+                        </p>
+                    </div>
+                `;
+                  }
+            });
+
+            function filterCandidates() {
+                  const role = document.getElementById("role").value.toLowerCase().trim();
+                  const name = document.getElementById("name").value.toLowerCase().trim();
+                  const contact = document.getElementById("contact").value.trim();
+                  const experience = document.getElementById("experience").value.trim();
+                  const gender = document.getElementById("gender").value.trim();
+
+                  // Require at least one input
+                  if (!role && !name && !contact && !experience && !gender) {
+                        alert("Please enter at least one search filter.");
+                        searchPerformed = false;
+                        filtered = [];
+                        renderResults();
+                        return;
+                  }
+                  searchPerformed = true;
+
+                  filtered = candidates.filter(row => {
+                        const matchesRole = !role || (row["Job Type"] && row["Job Type"].toLowerCase().includes(role));
+                        const matchesName = !name || (row["Name"] && row["Name"].toLowerCase().includes(name));
+                        const matchesContact = !contact || (row["Contact"] && row["Contact"].includes(contact));
+                        const matchesExperience = !experience || (row["Experience"] && row["Experience"].toLowerCase().includes(experience.toLowerCase()));
+                        const matchesGender = !gender || (row["Gender"] && row["Gender"].toString() === gender);
+
+                        return matchesRole && matchesName && matchesContact && matchesExperience && matchesGender;
+                  });
+
+                  currentPage = 1;
+                  renderResults();
+
+                  // Close sidebar on mobile after search
+                  if (window.innerWidth <= 1024) {
+                        toggleSidebar();
+                  }
+            }
+
+            function renderResults() {
+                  const start = (currentPage - 1) * resultsPerPage;
+                  const end = start + resultsPerPage;
+                  const pageData = filtered.slice(start, end);
+
+                  // Results header
+                  let html = "";
+                  if (searchPerformed) {
+                        html += `
+                <div class="results-header">
+                    <p class="results-count">
+                        <i class="fas fa-users"></i>
+                        Found <strong>${filtered.length}</strong> candidate${filtered.length !== 1 ? 's' : ''}
+                    </p>
+                </div>
+            `;
+                  }
+
+                  // Candidate cards
+                  if (pageData.length === 0) {
+                        html += `
+                    <div class="candidate-card">
+                        <div class="empty-state">
+                            <i class="fas fa-search"></i>
+                            <h5>No candidates found</h5>
+                            <p>Try adjusting your search filters to find more candidates</p>
+                        </div>
+                    </div>
+                `;
+                  } else {
+                        pageData.forEach((row, index) => {
+                              // WhatsApp button logic
+                              let whatsappButton = "";
+                              if (row.Contact && /^\d{10}$/.test(row.Contact.trim())) {
+                                    whatsappButton = `
+                            <a class="btn-action btn-whatsapp" 
+                               href="https://web.whatsapp.com/send?phone=91${row.Contact.trim()}&text=Hi ${encodeURIComponent(row.Name || 'there')}, I found your profile interesting and would like to discuss potential opportunities." 
+                               target="_blank">
+                                <i class="fab fa-whatsapp"></i>
+                                WhatsApp
+                            </a>
+                        `;
+                              } else {
+                                    whatsappButton = `
+                            <span class="btn-action btn-disabled">
+                                <i class="fas fa-ban"></i>
+                                No WhatsApp
+                            </span>
+                        `;
+                              }
+
+                              // Resume button logic
+                              let resumeButton = "";
+                              if (row.Resume && row.Resume.trim() !== '') {
+                                    resumeButton = `
+                            <a class="btn-action btn-resume" 
+                               href="${row.Resume.trim()}" 
+                               target="_blank">
+                                <i class="fas fa-file-alt"></i>
+                                View Resume
+                            </a>
+                        `;
+                              } else {
+                                    resumeButton = `
+                            <span class="btn-action btn-disabled">
+                                <i class="fas fa-file-times"></i>
+                                No Resume
+                            </span>
+                        `;
+                              }
+
+                              html += `
+                        <div class="candidate-card">
+                            <div class="candidate-info">
+                                <div class="info-row">
+                                    <i class="fas fa-user info-icon"></i>
+                                    <span class="info-label">Name:</span>
+                                    <span class="info-value">${row.Name || 'N/A'}</span>
+                                </div>
+                                <div class="info-row">
+                                    <i class="fas fa-briefcase info-icon"></i>
+                                    <span class="info-label">Role:</span>
+                                    <span class="info-value">${row["Job Type"] || 'N/A'}</span>
+                                </div>
+                                <div class="info-row">
+                                    <i class="fas fa-map-marker-alt info-icon"></i>
+                                    <span class="info-label">Location:</span>
+                                    <span class="info-value">${row.City || 'N/A'}</span>
+                                </div>
+                                <div class="info-row">
+                                    <i class="fas fa-phone info-icon"></i>
+                                    <span class="info-label">Mobile:</span>
+                                    <span class="info-value">${row.Contact || 'N/A'}</span>
+                                </div>
+                                <div class="info-row">
+                                    <i class="fas fa-clock info-icon"></i>
+                                    <span class="info-label">Experience:</span>
+                                    <span class="info-value">${row.Experience || 'N/A'}</span>
+                                </div>
+                                <div class="info-row">
+                                    <i class="fas fa-venus-mars info-icon"></i>
+                                    <span class="info-label">Gender:</span>
+                                    <span class="info-value">${row.Gender === '5' ? 'Male' : row.Gender === '1' ? 'Female' : 'N/A'}</span>
+                                </div>
+                            </div>
+                            <div class="action-buttons">
+                                ${resumeButton}
+                                ${whatsappButton}
+                            </div>
+                        </div>
+                    `;
+                        });
+                  }
+
+                  document.getElementById("results").innerHTML = html;
+                  renderPagination();
+            }
+
+            function renderPagination() {
+                  const totalPages = Math.ceil(filtered.length / resultsPerPage);
+                  let pagHtml = "";
+
+                  if (totalPages <= 1) {
+                        document.getElementById("pagination").innerHTML = "";
+                        return;
+                  }
+
+                  // Previous button
+                  if (currentPage > 1) {
+                        pagHtml += `
+                    <li class="page-item">
+                        <a class="page-link" href="#" onclick="gotoPage(${currentPage - 1})">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                `;
+                  }
+
+                  // Page numbers
+                  let startPage = Math.max(1, currentPage - 2);
+                  let endPage = Math.min(totalPages, currentPage + 2);
+
+                  if (startPage > 1) {
+                        pagHtml += `
+                    <li class="page-item">
+                        <a class="page-link" href="#" onclick="gotoPage(1)">1</a>
+                    </li>
+                `;
+                        if (startPage > 2) {
+                              pagHtml += `<li class="page-item"><span class="page-link">...</span></li>`;
+                        }
+                  }
+
+                  for (let i = startPage; i <= endPage; i++) {
+                        pagHtml += `
+                    <li class="page-item ${i === currentPage ? 'active' : ''}">
+                        <a class="page-link" href="#" onclick="gotoPage(${i})">${i}</a>
+                    </li>
+                `;
+                  }
+
+                  if (endPage < totalPages) {
+                        if (endPage < totalPages - 1) {
+                              pagHtml += `<li class="page-item"><span class="page-link">...</span></li>`;
+                        }
+                        pagHtml += `
+                    <li class="page-item">
+                        <a class="page-link" href="#" onclick="gotoPage(${totalPages})">${totalPages}</a>
+                    </li>
+                `;
+                  }
+
+                  // Next button
+                  if (currentPage < totalPages) {
+                        pagHtml += `
+                    <li class="page-item">
+                        <a class="page-link" href="#" onclick="gotoPage(${currentPage + 1})">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                `;
+                  }
+
+                  document.getElementById("pagination").innerHTML = pagHtml;
+                  // update max for page input
+                  const pageInputEl = document.getElementById("pageInput");
+                  if (pageInputEl) {
+                        pageInputEl.max = totalPages;
+                  }
+            }
+
+            function gotoPage(page) {
+                  currentPage = page;
+                  renderResults();
+                  // Scroll to top of results
+                  document.querySelector('.results-container').scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                  });
+            }
+
+            // Jump to a specific page via input
+            function jumpToPage() {
+                  const input = document.getElementById('pageInput');
+                  if (!input) return;
+                  const requested = parseInt(input.value, 10);
+                  if (isNaN(requested)) return;
+                  const totalPages = Math.ceil(filtered.length / resultsPerPage);
+                  if (requested >= 1 && requested <= totalPages) {
+                        gotoPage(requested);
+                  } else {
+                        alert(`Please enter a number between 1 and ${totalPages}`);
+                  }
+            }
+
+            // Allow Enter key to trigger search
+            document.addEventListener('keypress', function (e) {
+                  if (e.key === 'Enter') {
+                        if (document.activeElement && document.activeElement.id === 'pageInput') {
+                              jumpToPage();
+                        } else {
+                              filterCandidates();
+                        }
+                  }
+            });
+
+            // Close mobile sidebar when clicking outside
+            document.addEventListener('click', function (e) {
+                  const sidebar = document.getElementById('sidebar');
+                  const mobileToggle = document.querySelector('.mobile-toggle');
+
+                  if (window.innerWidth <= 1024 &&
+                        !sidebar.contains(e.target) &&
+                        !mobileToggle.contains(e.target) &&
+                        sidebar.classList.contains('open')) {
+                        toggleSidebar();
+                  }
+            });
+
+            // Handle window resize
+            window.addEventListener('resize', function () {
+                  const sidebar = document.getElementById('sidebar');
+                  const backdrop = document.getElementById('sidebarBackdrop');
+
+                  if (window.innerWidth > 1024) {
+                        sidebar.classList.remove('open');
+                        backdrop.classList.remove('show');
+                  }
+            });
+      </script>
+</body>
+
+</html>
