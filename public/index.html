@@ -775,6 +775,16 @@
                         </div>
 
                         <div class="input-group">
+                              <label class="input-label">Area</label>
+                              <div style="position: relative;">
+                                    <i class="fas fa-briefcase input-icon"></i>
+                                    <select id="area" class="form-control">
+                                          <option value="">Select Area</option>
+                                    </select>
+                              </div>
+                        </div>
+
+                        <div class="input-group">
                               <label class="input-label">Gender</label>
                               <div style="position: relative;">
                                     <i class="fas fa-venus-mars input-icon"></i>
@@ -844,11 +854,11 @@
                               experienceSet.add(candidate.Experience.trim());
                         }
                   });
-                  
+
                   const experienceSelect = document.getElementById('experience');
                   // Clear existing options except the first one
                   experienceSelect.innerHTML = '<option value="">Select Experience</option>';
-                  
+
                   // Sort and add unique experience values
                   Array.from(experienceSet).sort().forEach(exp => {
                         const option = document.createElement('option');
@@ -857,6 +867,39 @@
                         experienceSelect.appendChild(option);
                   });
             }
+
+            function populateAreaOptions() {
+                  const areaSet = new Set();
+                  
+                  // Extract unique areas from candidates data
+                  candidates.forEach(candidate => {
+                        if (candidate.Area && candidate.Area.trim() !== '') {
+                              // Split by comma if multiple areas exist in single field
+                              const areas = candidate.Area.split(',');
+                              areas.forEach(area => {
+                                    const trimmedArea = area.trim();
+                                    if (trimmedArea !== '') {
+                                          areaSet.add(trimmedArea);
+                                    }
+                              });
+                        }
+                  });
+
+                  const areaSelect = document.getElementById('area');
+                  // Clear existing options except the first one
+                  areaSelect.innerHTML = '<option value="">Select Area</option>';
+
+                  // Sort areas alphabetically and add to dropdown
+                  Array.from(areaSet).sort().forEach(area => {
+                        const option = document.createElement('option');
+                        option.value = area;
+                        option.textContent = area;
+                        areaSelect.appendChild(option);
+                  });
+            }
+
+
+
 
             // Mobile sidebar toggle
             function toggleSidebar() {
@@ -884,8 +927,15 @@
                   header: true,
                   complete: function (results) {
                         candidates = results.data.filter(row => row.Name && row.Name.trim() !== '');
+                        // Clean up area data
+                        candidates.forEach(candidate => {
+                              if (candidate.Area) {
+                                    candidate.Area = candidate.Area.trim();
+                              }
+                        });
                         filtered = candidates;
                         populateExperienceOptions();
+                        populateAreaOptions();
                         renderResults();
                   },
                   error: function (error) {
@@ -905,10 +955,11 @@
                   const name = document.getElementById("name").value.toLowerCase().trim();
                   const contact = document.getElementById("contact").value.trim();
                   const experience = document.getElementById("experience").value.trim();
+                  const area = document.getElementById("area").value.trim();
                   const gender = document.getElementById("gender").value.trim();
 
                   // Require at least one input
-                  if (!role && !name && !contact && !experience && !gender) {
+                  if (!role && !name && !contact && !experience && !area && !gender) {
                         alert("Please enter at least one search filter.");
                         searchPerformed = false;
                         filtered = [];
@@ -922,9 +973,10 @@
                         const matchesName = !name || (row["Name"] && row["Name"].toLowerCase().includes(name));
                         const matchesContact = !contact || (row["Contact"] && row["Contact"].includes(contact));
                         const matchesExperience = !experience || (row["Experience"] && row["Experience"].toLowerCase().includes(experience.toLowerCase()));
+                        const matchesArea = !area || (row["Area"] && row["Area"].trim() !== '' && row["Area"].toLowerCase().includes(area.toLowerCase()));
                         const matchesGender = !gender || (row["Gender"] && row["Gender"].toString() === gender);
 
-                        return matchesRole && matchesName && matchesContact && matchesExperience && matchesGender;
+                        return matchesRole && matchesName && matchesContact && matchesExperience && matchesArea && matchesGender;
                   });
 
                   currentPage = 1;
@@ -1034,6 +1086,11 @@
                                     <i class="fas fa-clock info-icon"></i>
                                     <span class="info-label">Experience:</span>
                                     <span class="info-value">${row.Experience || 'N/A'}</span>
+                                </div>
+                                <div class="info-row">
+                                    <i class="fas fa-map-marker-alt info-icon"></i>
+                                    <span class="info-label">Area:</span>
+                                    <span class="info-value">${row.Area && row.Area.trim() !== '' ? row.Area.trim() : 'Not specified'}</span>
                                 </div>
                                 <div class="info-row">
                                     <i class="fas fa-venus-mars info-icon"></i>
