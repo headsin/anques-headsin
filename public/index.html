@@ -59,7 +59,7 @@
                   position: fixed;
                   top: 0;
                   left: 0;
-                  width: 320px;
+                  width: 380px;
                   z-index: 1000;
                   box-shadow: var(--shadow-medium);
                   transition: transform 0.3s ease;
@@ -163,17 +163,26 @@
             }
 
             /* Form Inputs */
+            .form-group { margin-bottom: 16px; }
             .input-group {
                   position: relative;
-                  margin-bottom: 1.5rem;
+                  margin-bottom: 16px; /* equal vertical spacing */
+                  width: 100%;
+            }
+            /* Ensure inner wrapper spans full width when Bootstrap .input-group applies flex */
+            .input-group > div {
+                  width: 100%;
+                  flex: 1 1 auto;
             }
 
+            .form-group label,
             .input-label {
                   display: block;
-                  font-size: 0.875rem;
+                  font-size: 14px;
                   font-weight: 500;
                   color: var(--text-primary);
-                  margin-bottom: 0.5rem;
+                  margin-bottom: 6px; /* even spacing above fields */
+                  line-height: 1.2;
             }
 
             .input-icon {
@@ -188,13 +197,14 @@
 
             .form-control {
                   background: var(--bg-white);
-                  border: 2px solid var(--border-color);
+                  border: 1px solid var(--border-color);
                   border-radius: var(--border-radius);
                   color: var(--text-primary);
-                  padding: 0.875rem 1rem 0.875rem 3rem;
-                  font-size: 0.95rem;
+                  padding: 10px 12px 10px 3rem; /* uniform padding */
+                  font-size: 14px; /* uniform font size */
                   transition: all 0.3s ease;
-                  width: 100%;
+                  width: 100%; /* ensure full width */
+                  min-height: 48px; /* uniform height */
             }
 
             .form-control::placeholder {
@@ -217,6 +227,8 @@
                   padding-right: 3rem;
                   appearance: none;
                   cursor: pointer;
+                  font-size: 14px;
+                  width: 100%;
             }
 
             select.form-control:hover {
@@ -239,6 +251,123 @@
             select.form-control option:checked {
                   background: var(--primary-light);
                   color: var(--primary-color);
+            }
+
+            /* Searchable Multi-select (enhancement for #experience and #area) */
+            .multi-select {
+                  position: relative;
+                  display: block;
+                  width: 100%; /* ensure full width */
+            }
+            .ms-control {
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+                  gap: 0.5rem;
+                  background: var(--bg-white);
+                  border: 1px solid var(--border-color);
+                  border-radius: var(--border-radius);
+                  padding: 10px 12px; /* match select padding */
+                  min-height: 48px; /* match select height */
+                  cursor: pointer;
+                  box-shadow: var(--shadow-light);
+                  font-size: 14px; /* uniform font size */
+                  width: 100%; /* stretch to parent */
+            }
+            /* account for the left icon present in input-group */
+            .input-group .multi-select .ms-control {
+                  padding-left: 3rem;
+                  width: 100%;
+            }
+            .ms-control:focus-within,
+            .ms-control.ms-open {
+                  border-color: var(--primary-color);
+                  box-shadow: 0 0 0 3px rgba(63, 21, 98, 0.1);
+            }
+            .ms-placeholder {
+                  color: var(--text-muted);
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                  white-space: nowrap;
+            }
+            .ms-tags {
+                  display: flex;
+                  align-items: center;
+                  gap: 0.5rem; /* even spacing between chips */
+                  flex-wrap: nowrap;
+                  overflow: hidden;
+            }
+            .ms-tag {
+                  background: var(--primary-light);
+                  color: var(--primary-color);
+                  border-radius: 12px;
+                  padding: 4px 8px; /* small, even padding */
+                  margin: 2px 4px; /* consistent chip spacing */
+                  font-size: 13px;
+                  white-space: nowrap;
+            }
+            .ms-tag button.ms-remove {
+                  background: transparent;
+                  border: none;
+                  color: var(--primary-color);
+                  font-size: 0.9rem;
+                  margin-left: 0.25rem;
+                  cursor: pointer;
+            }
+            .ms-caret {
+                  color: var(--text-muted);
+            }
+            .ms-dropdown {
+                  position: absolute;
+                  top: calc(100% + 6px);
+                  left: 0;
+                  right: 0;
+                  background: var(--bg-white);
+                  border: 1px solid var(--border-color);
+                  border-radius: var(--border-radius);
+                  box-shadow: var(--shadow-large);
+                  z-index: 50;
+                  display: none;
+            }
+            .ms-open + .ms-dropdown,
+            .multi-select.open .ms-dropdown {
+                  display: block;
+            }
+            .ms-search {
+                  border-bottom: 1px solid var(--border-color);
+                  padding: 0.5rem;
+            }
+            .ms-search input {
+                  width: 100%;
+                  border: 1px solid var(--border-color);
+                  border-radius: 8px;
+                  padding: 0.5rem 0.75rem;
+                  font-size: 0.9rem;
+            }
+            .ms-options {
+                  max-height: 220px;
+                  overflow: auto;
+                  padding: 0.25rem 0.25rem 0.5rem 0.25rem;
+            }
+            .ms-option {
+                  display: flex;
+                  align-items: center;
+                  gap: 0.5rem;
+                  padding: 0.5rem 0.75rem;
+                  border-radius: 8px;
+                  cursor: pointer;
+            }
+            .ms-option:hover {
+                  background: var(--primary-light);
+            }
+            .ms-option input[type="checkbox"] {
+                  accent-color: #3f1562;
+            }
+            .ms-empty {
+                  color: var(--text-muted);
+                  padding: 0.75rem;
+                  text-align: center;
+                  font-size: 0.9rem;
             }
 
             /* Special styling for experience and gender selects */
@@ -293,7 +422,7 @@
 
             /* Main Content */
             .main-content {
-                  margin-left: 320px;
+                  margin-left: 380px;
                   min-height: 100vh;
                   background: var(--bg-light);
                   transition: margin-left 0.3s ease;
@@ -755,6 +884,14 @@
                               </div>
                         </div>
 
+                        <div class="input-group">
+                              <label class="input-label">Location</label>
+                              <div style="position: relative;">
+                                    <i class="fas fa-map-marker-alt input-icon"></i>
+                                    <input id="location" class="form-control" placeholder="e.g., Surat">
+                              </div>
+                        </div>
+
 
                         <div class="input-group">
                               <label class="input-label">Contact Number</label>
@@ -764,22 +901,54 @@
                               </div>
                         </div>
 
-                        <div class="input-group">
+                        <div class="form-group input-group">
                               <label class="input-label">Experience</label>
                               <div style="position: relative;">
                                     <i class="fas fa-briefcase input-icon"></i>
-                                    <select id="experience" class="form-control">
-                                          <option value="">Select Experience</option>
-                                    </select>
+                                    <select id="experience" class="form-control d-none" multiple></select>
+                                    <div id="experienceMs" class="multi-select">
+                                          <div class="ms-control" tabindex="0">
+                                                <div class="ms-tags">
+                                                      <span class="ms-placeholder">Select Experience</span>
+                                                </div>
+                                                <i class="fas fa-chevron-down ms-caret"></i>
+                                          </div>
+                                          <div class="ms-dropdown">
+                                                <div class="ms-search"><input type="text" placeholder="Search experience..."></div>
+                                                <div class="ms-options"></div>
+                                          </div>
+                                    </div>
                               </div>
                         </div>
 
-                        <div class="input-group">
+                        <div class="form-group input-group">
                               <label class="input-label">Area</label>
                               <div style="position: relative;">
                                     <i class="fas fa-briefcase input-icon"></i>
-                                    <select id="area" class="form-control">
-                                          <option value="">Select Area</option>
+                                    <select id="area" class="form-control d-none" multiple></select>
+                                    <div id="areaMs" class="multi-select">
+                                          <div class="ms-control" tabindex="0">
+                                                <div class="ms-tags">
+                                                      <span class="ms-placeholder">Select Area</span>
+                                                </div>
+                                                <i class="fas fa-chevron-down ms-caret"></i>
+                                          </div>
+                                          <div class="ms-dropdown">
+                                                <div class="ms-search"><input type="text" placeholder="Search area..."></div>
+                                                <div class="ms-options"></div>
+                                          </div>
+                                    </div>
+                              </div>
+                        </div>
+
+                        <div class="form-group input-group">
+                              <label class="input-label">Religion</label>
+                              <div style="position: relative;">
+                                    <i class="fas fa-praying-hands input-icon"></i>
+                                    <select id="religion" class="form-control">
+                                          <option value="All">All</option>
+                                          <option value="Hindu">Hindu</option>
+                                          <option value="Muslim">Muslim</option>
                                     </select>
                               </div>
                         </div>
@@ -922,7 +1091,7 @@
             // Initialize data loading
             showLoading();
 
-            Papa.parse("anquesXheadsin.csv", {
+            Papa.parse("1_candidates.csv", {
                   download: true,
                   header: true,
                   complete: function (results) {
@@ -936,6 +1105,8 @@
                         filtered = candidates;
                         populateExperienceOptions();
                         populateAreaOptions();
+                        initMultiSelect('experience', 'experienceMs');
+                        initMultiSelect('area', 'areaMs');
                         renderResults();
                   },
                   error: function (error) {
@@ -953,13 +1124,15 @@
             function filterCandidates() {
                   const role = document.getElementById("role").value.toLowerCase().trim();
                   const name = document.getElementById("name").value.toLowerCase().trim();
+                  const location = (document.getElementById("location")?.value || '').toLowerCase().trim();
                   const contact = document.getElementById("contact").value.trim();
-                  const experience = document.getElementById("experience").value.trim();
-                  const area = document.getElementById("area").value.trim();
+                  const experienceSelected = Array.from(document.getElementById("experience").selectedOptions || []).map(o => o.value.trim()).filter(v => v);
+                  const areasSelected = Array.from(document.getElementById("area").selectedOptions || []).map(o => o.value.trim()).filter(v => v);
                   const gender = document.getElementById("gender").value.trim();
+                  const religion = (document.getElementById("religion")?.value || 'All').trim();
 
                   // Require at least one input
-                  if (!role && !name && !contact && !experience && !area && !gender) {
+                  if (!role && !name && !location && !contact && experienceSelected.length === 0 && areasSelected.length === 0 && !gender && (religion === 'All')) {
                         alert("Please enter at least one search filter.");
                         searchPerformed = false;
                         filtered = [];
@@ -971,12 +1144,18 @@
                   filtered = candidates.filter(row => {
                         const matchesRole = !role || (row["Job Type"] && row["Job Type"].toLowerCase().includes(role));
                         const matchesName = !name || (row["Name"] && row["Name"].toLowerCase().includes(name));
+                        const matchesLocation = !location || (row["City"] && row["City"].toLowerCase().includes(location));
                         const matchesContact = !contact || (row["Contact"] && row["Contact"].includes(contact));
-                        const matchesExperience = !experience || (row["Experience"] && row["Experience"].toLowerCase().includes(experience.toLowerCase()));
-                        const matchesArea = !area || (row["Area"] && row["Area"].trim() !== '' && row["Area"].toLowerCase().includes(area.toLowerCase()));
+                        const matchesExperience = experienceSelected.length === 0 || (
+                              row["Experience"] && experienceSelected.some(exp => row["Experience"].toString().toLowerCase().includes(exp.toLowerCase()))
+                        );
+                        const matchesArea = areasSelected.length === 0 || (
+                              row["Area"] && row["Area"].trim() !== '' && areasSelected.some(a => row["Area"].toString().toLowerCase().includes(a.toLowerCase()))
+                        );
                         const matchesGender = !gender || (row["Gender"] && row["Gender"].toString() === gender);
+                        const matchesReligion = (religion === 'All') || (row["Religion"] && row["Religion"].toLowerCase().includes(religion.toLowerCase()));
 
-                        return matchesRole && matchesName && matchesContact && matchesExperience && matchesArea && matchesGender;
+                        return matchesRole && matchesName && matchesLocation && matchesContact && matchesExperience && matchesArea && matchesGender && matchesReligion;
                   });
 
                   currentPage = 1;
@@ -1000,7 +1179,7 @@
                 <div class="results-header">
                     <p class="results-count">
                         <i class="fas fa-users"></i>
-                        Found <strong>${filtered.length}</strong> candidate${filtered.length !== 1 ? 's' : ''}
+                        Found <strong>${filtered.length}</strong> candidate${filtered.length !== 1 ? 's' : ''}${role ? ` for role: <strong>${role}</strong>` : ''}
                     </p>
                 </div>
             `;
@@ -1182,6 +1361,117 @@
                   if (pageInputEl) {
                         pageInputEl.max = totalPages;
                   }
+            }
+
+            // Initialize custom searchable multi-select for a hidden <select multiple>
+            function initMultiSelect(selectId, wrapperId) {
+                  const selectEl = document.getElementById(selectId);
+                  const wrapper = document.getElementById(wrapperId);
+                  if (!selectEl || !wrapper) return;
+
+                  const control = wrapper.querySelector('.ms-control');
+                  const tagsEl = wrapper.querySelector('.ms-tags');
+                  const placeholderEl = wrapper.querySelector('.ms-placeholder');
+                  const dropdown = wrapper.querySelector('.ms-dropdown');
+                  const searchInput = wrapper.querySelector('.ms-search input');
+                  const optionsEl = wrapper.querySelector('.ms-options');
+
+                  function getOptions() {
+                        return Array.from(selectEl.options).map(o => ({ value: o.value, label: o.textContent })).filter(o => o.value !== '');
+                  }
+
+                  function renderOptions(filter = '') {
+                        const normalized = filter.trim().toLowerCase();
+                        const opts = getOptions().filter(o => o.label.toLowerCase().includes(normalized));
+                        if (opts.length === 0) {
+                              optionsEl.innerHTML = `<div class="ms-empty">No matches</div>`;
+                              return;
+                        }
+                        optionsEl.innerHTML = '';
+                        opts.forEach(o => {
+                              const isSelected = Array.from(selectEl.selectedOptions).some(so => so.value === o.value);
+                              const item = document.createElement('div');
+                              item.className = 'ms-option';
+                              item.innerHTML = `<input type="checkbox" ${isSelected ? 'checked' : ''}> <span>${o.label}</span>`;
+                              item.addEventListener('click', (e) => {
+                                    const input = item.querySelector('input');
+                                    input.checked = !input.checked;
+                                    setSelected(o.value, input.checked);
+                                    e.stopPropagation();
+                              });
+                              optionsEl.appendChild(item);
+                        });
+                  }
+
+                  function setSelected(value, selected) {
+                        const option = Array.from(selectEl.options).find(o => o.value === value);
+                        if (!option) return;
+                        option.selected = !!selected;
+                        updateTags();
+                  }
+
+                  function updateTags() {
+                        const selected = Array.from(selectEl.selectedOptions).map(o => ({ value: o.value, label: o.textContent }));
+                        tagsEl.innerHTML = '';
+                        if (selected.length === 0) {
+                              const ph = document.createElement('span');
+                              ph.className = 'ms-placeholder';
+                              ph.textContent = wrapperId === 'experienceMs' ? 'Select Experience' : 'Select Area';
+                              tagsEl.appendChild(ph);
+                        } else {
+                              selected.slice(0, 3).forEach(s => {
+                                    const tag = document.createElement('span');
+                                    tag.className = 'ms-tag';
+                                    tag.innerHTML = `${s.label} <button class="ms-remove" title="Remove" aria-label="Remove">×</button>`;
+                                    tag.querySelector('button.ms-remove').addEventListener('click', (e) => {
+                                          e.stopPropagation();
+                                          setSelected(s.value, false);
+                                    });
+                                    tagsEl.appendChild(tag);
+                              });
+                              if (selected.length > 3) {
+                                    const more = document.createElement('span');
+                                    more.className = 'ms-tag';
+                                    more.textContent = `+${selected.length - 3}`;
+                                    tagsEl.appendChild(more);
+                              }
+                        }
+                        renderOptions(searchInput.value || '');
+                  }
+
+                  // open/close
+                  function open() {
+                        wrapper.classList.add('open');
+                        control.classList.add('ms-open');
+                        dropdown.style.display = 'block';
+                        searchInput.focus();
+                        renderOptions();
+                  }
+                  function close() {
+                        wrapper.classList.remove('open');
+                        control.classList.remove('ms-open');
+                        dropdown.style.display = 'none';
+                        searchInput.value = '';
+                  }
+
+                  control.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        if (wrapper.classList.contains('open')) close(); else open();
+                  });
+                  searchInput.addEventListener('input', () => renderOptions(searchInput.value));
+                  document.addEventListener('click', (e) => {
+                        if (!wrapper.contains(e.target)) close();
+                  });
+
+                  // keyboard support
+                  control.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault();
+                              if (wrapper.classList.contains('open')) close(); else open();
+                        }
+                  });
+
+                  updateTags();
             }
 
             function gotoPage(page) {
